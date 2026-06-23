@@ -1,10 +1,21 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 
 export const AdminContext = createContext();
 
 export const AdminProvider = ({ children }) => {
 
-  const [admin, setAdmin] = useState(null);
+  const [admin, setAdmin] = useState(() => {
+    const adminGuardado = localStorage.getItem("admin");
+    return adminGuardado ? JSON.parse(adminGuardado) : null;
+  });
+
+  useEffect(() => {
+    if (admin) {
+      localStorage.setItem("admin", JSON.stringify(admin));
+    } else {
+      localStorage.removeItem("admin");
+    }
+  }, [admin]);
 
   const login = (nombre, sector) => {
     setAdmin({
