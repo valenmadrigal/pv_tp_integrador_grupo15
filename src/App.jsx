@@ -3,6 +3,7 @@ import { useContext } from "react";
 
 import { AdminContext } from "./context/AdminContext";
 
+
 import Login from "./views/Login";
 import ListaClientes from "./views/ListaClientes";
 import DetalleCliente from "./views/DetalleCliente";
@@ -10,9 +11,12 @@ import DetalleCliente from "./views/DetalleCliente";
 import Header from "./components/Header";
 
 
+
 function App() {
 
+
   const { admin } = useContext(AdminContext);
+
 
 
   return (
@@ -20,70 +24,140 @@ function App() {
     <Routes>
 
 
-      
+      {/* LOGIN */}
+
       <Route
+
         path="/login"
+
         element={
-          admin 
-          ? <Navigate to="/" /> 
-          : <Login />
+
+          admin
+
+          ?
+
+          <Navigate to="/" />
+
+          :
+
+          <Login />
+
         }
+
       />
 
 
+
+
+      {/* PAGINA PRINCIPAL */}
+
       <Route
+
         path="/"
+
         element={
-          admin 
+
+          admin
+
           ?
+
           <>
+
             <Header />
+
             <ListaClientes />
+
           </>
+
           :
+
           <Navigate to="/login" />
+
         }
+
       />
 
 
-      
+
+
+      {/* LISTA CLIENTES */}
+
       <Route
+
         path="/clientes"
+
         element={
+
           admin
+
           ?
+
           <>
+
             <Header />
+
             <ListaClientes />
+
           </>
+
           :
+
           <Navigate to="/login" />
+
         }
+
       />
 
 
-     
+
+
+      {/* DETALLE CLIENTE */}
+
       <Route
+
         path="/clientes/:id"
+
         element={
+
           admin
+
           ?
+
           <>
+
             <Header />
+
             <DetalleCliente />
+
           </>
+
           :
+
           <Navigate to="/login" />
+
         }
+
       />
 
 
-     
+
+
+      {/* RUTA DESCONOCIDA */}
+
       <Route
+
         path="*"
+
         element={
-          <Navigate to={admin ? "/" : "/login"} />
+
+          <Navigate
+
+            to={admin ? "/" : "/login"}
+
+          />
+
         }
+
       />
 
 
@@ -92,6 +166,7 @@ function App() {
   );
 
 }
+
 
 
 export default App;
