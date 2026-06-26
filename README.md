@@ -1,16 +1,24 @@
-# React + Vite
+# Panel de Control de Clientes
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Trabajo Práctico Integrador - Programación Visual  
+Analista Programador Universitario - Facultad de Ingeniería
 
-Currently, two official plugins are available:
+## Descripción
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Aplicación web desarrollada con React y Vite que implementa un Panel de Control de Clientes en tiempo real. Se conecta a la API pública FakeStoreAPI para gestionar usuarios de forma asincrónica. Incluye autenticación con Context API, navegación con React Router DOM, y diseño responsivo con React Bootstrap.
 
-## React Compiler
+## Tecnologías utilizadas
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React + Vite
+- React Router DOM
+- React Bootstrap
+- Context API + LocalStorage
+- FakeStoreAPI
 
-## Expanding the ESLint configuration
+## Integrantes
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+| Valentina Madrigal | @valemadrigal |
+| Lorena Araceli Suruguay | @Lore-03 |
+| Camila Araceli Romero | @CamilaRomero0 |
+| Yesica Arias | @AriasYesica27|
+| Jesus Cabrera Garcia| @jesuscabrera22 |
