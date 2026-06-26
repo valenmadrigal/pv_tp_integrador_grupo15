@@ -7,9 +7,12 @@ import { AdminContext } from "./context/AdminContext";
 import Login from "./views/Login";
 import ListaClientes from "./views/ListaClientes";
 import DetalleCliente from "./views/DetalleCliente";
+import Dashboard from "./views/Dashboard";
+
 
 import Header from "./components/Header";
-
+import Nav from "./components/layout/Nav";
+import Footer from "./components/layout/Footer";
 
 
 function App() {
@@ -50,32 +53,35 @@ function App() {
 
 
       {/* PAGINA PRINCIPAL */}
+      
+     <Route
+      
+      path="/"
+      
+      element={
+        
+        admin ? (
+        
+        <>
+        
+           <Header />
+        
+           <Nav />
 
-      <Route
+           <main>
 
-        path="/"
+           <Dashboard />
 
-        element={
-
-          admin
-
-          ?
-
-          <>
-
-            <Header />
-
-            <ListaClientes />
-
-          </>
-
-          :
-
+           </main>
+       
+           <Footer />
+         
+        </>
+        ) : (
           <Navigate to="/login" />
-
-        }
-
-      />
+        )
+      }
+     />
 
 
 
@@ -95,8 +101,16 @@ function App() {
           <>
 
             <Header />
-
-            <ListaClientes />
+            
+            <Nav />
+            
+            <main>
+             
+              <ListaClientes />
+            
+            </main>
+            
+            <Footer />
 
           </>
 
@@ -127,9 +141,15 @@ function App() {
 
             <Header />
 
-            <DetalleCliente />
+            <Nav />
+            
+            <main>
+              <DetalleCliente />
+            
+            </main>
+            <Footer />
 
-          </>
+            </>
 
           :
 
