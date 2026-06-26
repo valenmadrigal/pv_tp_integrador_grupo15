@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { AdminContext } from "../context/AdminContext";
+import { AdminContext } from "../../context/AdminContext";
 
 function Header(){
 

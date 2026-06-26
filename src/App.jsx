@@ -10,7 +10,7 @@ import DetalleCliente from "./views/DetalleCliente";
 import Dashboard from "./views/Dashboard";
 
 
-import Header from "./components/Header";
+import Header from "./components/layout/Header";
 import Nav from "./components/layout/Nav";
 import Footer from "./components/layout/Footer";
 
