@@ -8,7 +8,7 @@ function Dashboard() {
     <main className="container mt-4">
       <h2>Dashboard</h2>
 
-      <div className="card p-3 mt-3">
+      <div className="dashboard-card">
         <h4>Administrador conectado</h4>
 
         <p>

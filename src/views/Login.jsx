@@ -30,85 +30,63 @@ function Login() {
   };
 
 
-  return (
+return (
 
-    <div>
+  <div className="login">
 
-      <h1>
-        Login Administrador
-      </h1>
+    <h1>
+      Login Administrador
+    </h1>
 
+    <form onSubmit={handleSubmit}>
 
-      <form onSubmit={handleSubmit}>
+      <div>
 
+        <label>
+          Nombre del Administrador:
+        </label>
 
-        <div>
+        <input
+          type="text"
+          value={nombre}
+          onChange={(e)=>setNombre(e.target.value)}
+          placeholder="Ingrese nombre"
+        />
 
-          <label>
-            Nombre del Administrador:
-          </label>
+      </div>
 
-          <input
+      <div>
 
-            type="text"
+        <label>
+          Sector:
+        </label>
 
-            value={nombre}
+        <select
+          value={sector}
+          onChange={(e)=>setSector(e.target.value)}
+        >
 
-            onChange={(e)=>setNombre(e.target.value)}
+          <option value="Soporte">
+            Soporte
+          </option>
 
-            placeholder="Ingrese nombre"
+          <option value="Gerencia">
+            Gerencia
+          </option>
 
-          />
+        </select>
 
-        </div>
+      </div>
 
+      <button type="submit">
+        Ingresar
+      </button>
 
+    </form>
 
-        <div>
+  </div>
 
-          <label>
-            Sector:
-          </label>
-
-
-          <select
-
-            value={sector}
-
-            onChange={(e)=>setSector(e.target.value)}
-
-          >
-
-            <option value="Soporte">
-              Soporte
-            </option>
-
-
-            <option value="Gerencia">
-              Gerencia
-            </option>
-
-
-          </select>
-
-
-        </div>
-
-
-
-        <button type="submit">
-
-          Ingresar
-
-        </button>
-
-
-      </form>
-
-
-    </div>
-
-  );
+);
 
 }
 
