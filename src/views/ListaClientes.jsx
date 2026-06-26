@@ -14,17 +14,16 @@ import {
   Toast,
   ToastContainer,
 } from "react-bootstrap";
-
+ 
 const API_URL = "https://fakestoreapi.com/users";
-
+ 
 function ListaClientes() {
-
+ 
   const [clientes, setClientes] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [busqueda, setBusqueda] = useState("");
-
-  // Estados para el formulario de alta
+ 
   const [mostrarModal, setMostrarModal] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
@@ -39,7 +38,7 @@ function ListaClientes() {
     username: "",
     password: "",
   });
-
+ 
   useEffect(() => {
     const obtenerClientes = async () => {
       try {
@@ -59,22 +58,22 @@ function ListaClientes() {
     };
     obtenerClientes();
   }, []);
-
+ 
   const clientesFiltrados = clientes.filter((cliente) => {
     const termino = busqueda.toLowerCase();
     const apellido = cliente.name.lastname.toLowerCase();
     const ciudad = cliente.address.city.toLowerCase();
     return apellido.includes(termino) || ciudad.includes(termino);
   });
-
+ 
   const handleChange = (e) => {
     setNuevoCliente({ ...nuevoCliente, [e.target.name]: e.target.value });
   };
-
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setEnviando(true);
-
+ 
     const payload = {
       email: nuevoCliente.email,
       username: nuevoCliente.username,
@@ -91,20 +90,37 @@ function ListaClientes() {
       },
       phone: nuevoCliente.telefono,
     };
-
+ 
     try {
       const respuesta = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-
+ 
       if (!respuesta.ok) {
         throw new Error(`Error del servidor: ${respuesta.status}`);
       }
-
+ 
       const datos = await respuesta.json();
-
+ 
+      // Agregamos el cliente al estado local para que aparezca en la tabla
+      // sin necesidad de recargar — FakeStoreAPI no guarda datos reales,
+      // por eso actualizamos el estado en memoria directamente.
+      setClientes((prev) => [
+        ...prev,
+        {
+          id: datos.id,
+          name: {
+            firstname: nuevoCliente.nombre,
+            lastname: nuevoCliente.apellido,
+          },
+          email: nuevoCliente.email,
+          phone: nuevoCliente.telefono,
+          address: { city: nuevoCliente.ciudad },
+        },
+      ]);
+ 
       setToastMensaje(`Cliente dado de alta con éxito. ID asignado: ${datos.id}`);
       setToastError(false);
       setToastVisible(true);
@@ -113,7 +129,7 @@ function ListaClientes() {
         nombre: "", apellido: "", email: "",
         telefono: "", ciudad: "", username: "", password: "",
       });
-
+ 
     } catch (err) {
       setToastMensaje(`Error al dar de alta: ${err.message}`);
       setToastError(true);
@@ -122,11 +138,10 @@ function ListaClientes() {
       setEnviando(false);
     }
   };
-
+ 
   return (
     <Container className="py-4">
-
-      {/* Toast de éxito/error */}
+ 
       <ToastContainer position="top-end" className="p-3" style={{ zIndex: 9999 }}>
         <Toast
           bg={toastError ? "danger" : "success"}
@@ -143,14 +158,14 @@ function ListaClientes() {
           <Toast.Body className="text-white">{toastMensaje}</Toast.Body>
         </Toast>
       </ToastContainer>
-
+ 
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="fw-bold mb-0">Lista de Clientes</h2>
         <Button variant="success" onClick={() => setMostrarModal(true)}>
           + Nuevo Cliente
         </Button>
       </div>
-
+ 
       <InputGroup className="mb-4 shadow-sm" style={{ maxWidth: "450px" }}>
         <Form.Control
           placeholder="Buscar por apellido o ciudad..."
@@ -163,14 +178,14 @@ function ListaClientes() {
           </Button>
         )}
       </InputGroup>
-
+ 
       {cargando && (
         <div className="d-flex align-items-center gap-2">
           <Spinner animation="border" variant="primary" />
           <span>Cargando clientes...</span>
         </div>
       )}
-
+ 
       {!cargando && error && (
         <Alert variant="danger">
           <Alert.Heading>Error al cargar los clientes</Alert.Heading>
@@ -180,7 +195,7 @@ function ListaClientes() {
           </Button>
         </Alert>
       )}
-
+ 
       {!cargando && !error && (
         <>
           <p className="text-muted mb-3 fw-semibold">
@@ -188,7 +203,7 @@ function ListaClientes() {
             <Badge bg="primary">{clientesFiltrados.length}</Badge>
             {" "}de{" "}{clientes.length}{" "}clientes
           </p>
-
+ 
           {clientesFiltrados.length === 0 ? (
             <Alert variant="warning">
               No se encontraron clientes con ese apellido o ciudad.
@@ -225,7 +240,7 @@ function ListaClientes() {
           )}
         </>
       )}
-
+ 
       {/* Modal formulario de alta */}
       <Modal show={mostrarModal} onHide={() => setMostrarModal(false)} size="lg">
         <Modal.Header closeButton>
@@ -316,7 +331,7 @@ function ListaClientes() {
                 required
               />
             </Form.Group>
-
+ 
             <div className="d-flex justify-content-end gap-2">
               <Button variant="secondary" onClick={() => setMostrarModal(false)}>
                 Cancelar
@@ -335,9 +350,9 @@ function ListaClientes() {
           </Form>
         </Modal.Body>
       </Modal>
-
+ 
     </Container>
   );
 }
-
+ 
 export default ListaClientes;
