@@ -27,7 +27,7 @@ function App() {
     <Routes>
 
 
-      {/* LOGIN */}
+      
 
       <Route
 
@@ -52,7 +52,7 @@ function App() {
 
 
 
-      {/* PAGINA PRINCIPAL */}
+      
       
      <Route
       
@@ -86,7 +86,7 @@ function App() {
 
 
 
-      {/* LISTA CLIENTES */}
+      
 
       <Route
 
@@ -125,7 +125,7 @@ function App() {
 
 
 
-      {/* DETALLE CLIENTE */}
+      
 
       <Route
 
@@ -162,7 +162,7 @@ function App() {
 
 
 
-      {/* RUTA DESCONOCIDA */}
+      
 
       <Route
 
