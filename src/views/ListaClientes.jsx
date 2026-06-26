@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import {
   Container,
-  Table,
+  Card,
+  Row,
+  Col,
   Spinner,
   Alert,
   Form,
@@ -9,8 +11,6 @@ import {
   Button,
   Badge,
   Modal,
-  Row,
-  Col,
   Toast,
   ToastContainer,
 } from "react-bootstrap";
@@ -104,9 +104,8 @@ function ListaClientes() {
  
       const datos = await respuesta.json();
  
-      // Agregamos el cliente al estado local para que aparezca en la tabla
-      // sin necesidad de recargar — FakeStoreAPI no guarda datos reales,
-      // por eso actualizamos el estado en memoria directamente.
+      // Agregamos el cliente al estado local para que aparezca en la grilla
+      // sin recargar — FakeStoreAPI no guarda datos reales.
       setClientes((prev) => [
         ...prev,
         {
@@ -142,6 +141,7 @@ function ListaClientes() {
   return (
     <Container className="py-4">
  
+      {/* Toast éxito/error */}
       <ToastContainer position="top-end" className="p-3" style={{ zIndex: 9999 }}>
         <Toast
           bg={toastError ? "danger" : "success"}
@@ -151,14 +151,13 @@ function ListaClientes() {
           autohide
         >
           <Toast.Header>
-            <strong className="me-auto">
-              {toastError ? "Error" : "¡Éxito!"}
-            </strong>
+            <strong className="me-auto">{toastError ? "Error" : "¡Éxito!"}</strong>
           </Toast.Header>
           <Toast.Body className="text-white">{toastMensaje}</Toast.Body>
         </Toast>
       </ToastContainer>
  
+      {/* Encabezado */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="fw-bold mb-0">Lista de Clientes</h2>
         <Button variant="success" onClick={() => setMostrarModal(true)}>
@@ -166,7 +165,8 @@ function ListaClientes() {
         </Button>
       </div>
  
-      <InputGroup className="mb-4 shadow-sm" style={{ maxWidth: "450px" }}>
+      {/* Buscador */}
+      <InputGroup className="mb-4" style={{ maxWidth: 450 }}>
         <Form.Control
           placeholder="Buscar por apellido o ciudad..."
           value={busqueda}
@@ -179,6 +179,7 @@ function ListaClientes() {
         )}
       </InputGroup>
  
+      {/* Estado: cargando */}
       {cargando && (
         <div className="d-flex align-items-center gap-2">
           <Spinner animation="border" variant="primary" />
@@ -186,6 +187,7 @@ function ListaClientes() {
         </div>
       )}
  
+      {/* Estado: error */}
       {!cargando && error && (
         <Alert variant="danger">
           <Alert.Heading>Error al cargar los clientes</Alert.Heading>
@@ -196,12 +198,12 @@ function ListaClientes() {
         </Alert>
       )}
  
+      {/* Estado: éxito — grilla de cards */}
       {!cargando && !error && (
         <>
           <p className="text-muted mb-3 fw-semibold">
-            Mostrando{" "}
-            <Badge bg="primary">{clientesFiltrados.length}</Badge>
-            {" "}de{" "}{clientes.length}{" "}clientes
+            Mostrando <Badge bg="primary">{clientesFiltrados.length}</Badge>{" "}
+            de {clientes.length} clientes
           </p>
  
           {clientesFiltrados.length === 0 ? (
@@ -209,34 +211,70 @@ function ListaClientes() {
               No se encontraron clientes con ese apellido o ciudad.
             </Alert>
           ) : (
-            <Table striped bordered hover responsive className="shadow rounded overflow-hidden">
-              <thead className="table-dark">
-                <tr>
-                  <th>#ID</th>
-                  <th>Nombre Completo</th>
-                  <th>Email</th>
-                  <th>Teléfono</th>
-                  <th>Ciudad</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {clientesFiltrados.map((cliente) => (
-                  <tr key={cliente.id}>
-                    <td>{cliente.id}</td>
-                    <td>{cliente.name.firstname} {cliente.name.lastname}</td>
-                    <td>{cliente.email}</td>
-                    <td>{cliente.phone}</td>
-                    <td>{cliente.address.city}</td>
-                    <td>
-                      <Button variant="primary" size="sm" href={`/clientes/${cliente.id}`}>
+            <Row xs={1} sm={2} lg={3} className="g-4">
+              {clientesFiltrados.map((cliente) => (
+                <Col key={cliente.id}>
+                  <Card className="h-100 shadow-sm">
+                    {/* Cabecera de la card con avatar inicial */}
+                    <Card.Header className="bg-primary text-white d-flex align-items-center gap-2">
+                      <div
+                        style={{
+                          width: 38,
+                          height: 38,
+                          borderRadius: "50%",
+                          background: "rgba(255,255,255,0.25)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontWeight: "bold",
+                          fontSize: 18,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {cliente.name.firstname.charAt(0).toUpperCase()}
+                      </div>
+                      <span className="fw-bold">
+                        {cliente.name.firstname} {cliente.name.lastname}
+                      </span>
+                    </Card.Header>
+ 
+                    <Card.Body>
+                      <p className="mb-1">
+                        <small className="text-muted">ID</small>
+                        <br />
+                        <Badge bg="secondary">#{cliente.id}</Badge>
+                      </p>
+                      <p className="mb-1 mt-2">
+                        <small className="text-muted">Email</small>
+                        <br />
+                        {cliente.email}
+                      </p>
+                      <p className="mb-1 mt-2">
+                        <small className="text-muted">Teléfono</small>
+                        <br />
+                        {cliente.phone}
+                      </p>
+                      <p className="mb-0 mt-2">
+                        <small className="text-muted">Ciudad</small>
+                        <br />
+                        {cliente.address.city}
+                      </p>
+                    </Card.Body>
+ 
+                    <Card.Footer className="bg-white border-top-0">
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        className="w-100"
+                        href={`/clientes/${cliente.id}`}
+                      >
                         Ver Ficha Completa
                       </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
+                    </Card.Footer>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
           )}
         </>
       )}
