@@ -1,4 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { AdminContext } from "../context/AdminContext";
+import { PERMISOS } from "../constants/perfiles";
+import { CIUDADES_JUJUY } from "../constants/ciudadesJujuy";
 import {
   Container,
   Card,
@@ -18,7 +21,8 @@ import {
 const API_URL = "https://fakestoreapi.com/users";
  
 function ListaClientes() {
- 
+  const { tienePermiso } = useContext(AdminContext);
+
   const [clientes, setClientes] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
@@ -160,9 +164,11 @@ function ListaClientes() {
       {/* Encabezado */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="fw-bold mb-0">Lista de Clientes</h2>
-        <Button variant="success" onClick={() => setMostrarModal(true)}>
-          + Nuevo Cliente
-        </Button>
+        {tienePermiso(PERMISOS.CREAR_CLIENTES) && (
+          <Button variant="success" onClick={() => setMostrarModal(true)}>
+            + Nuevo Cliente
+          </Button>
+        )}
       </div>
  
       {/* Buscador */}
@@ -240,11 +246,6 @@ function ListaClientes() {
  
                     <Card.Body>
                       <p className="mb-1">
-                        <small className="text-muted">ID</small>
-                        <br />
-                        <Badge bg="secondary">#{cliente.id}</Badge>
-                      </p>
-                      <p className="mb-1 mt-2">
                         <small className="text-muted">Email</small>
                         <br />
                         {cliente.email}
@@ -338,13 +339,20 @@ function ListaClientes() {
             <Row>
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Ciudad</Form.Label>
-                  <Form.Control
+                  <Form.Label>Ciudad (Jujuy)</Form.Label>
+                  <Form.Select
                     name="ciudad"
                     value={nuevoCliente.ciudad}
                     onChange={handleChange}
                     required
-                  />
+                  >
+                    <option value="">Seleccionar ciudad...</option>
+                    {CIUDADES_JUJUY.map((ciudad) => (
+                      <option key={ciudad} value={ciudad}>
+                        {ciudad}
+                      </option>
+                    ))}
+                  </Form.Select>
                 </Form.Group>
               </Col>
               <Col md={6}>

@@ -11,6 +11,7 @@ import {
   Badge,
 } from "react-bootstrap";
 import { AdminContext } from "../context/AdminContext";
+import { PERMISOS } from "../constants/perfiles";
  
 const API_URL = "https://fakestoreapi.com/users";
  
@@ -20,7 +21,7 @@ function DetalleCliente() {
   const navigate = useNavigate();
  
   // Leemos el sector del admin logueado para controlar el botón de eliminar
-  const { admin } = useContext(AdminContext);
+  const { admin, tienePermiso } = useContext(AdminContext);
  
   const [cliente, setCliente] = useState(null);
   const [cargando, setCargando] = useState(true);
@@ -220,7 +221,7 @@ function DetalleCliente() {
                     </Badge>
                   </p>
                   <p className="text-muted" style={{ fontSize: "0.85rem" }}>
-                    {admin?.sector === "Gerencia"
+                    {tienePermiso(PERMISOS.ELIMINAR_CLIENTES)
                       ? "Tenés permisos para eliminar clientes."
                       : "Solo podés visualizar los datos del cliente."}
                   </p>
@@ -230,7 +231,7 @@ function DetalleCliente() {
           </Row>
  
           {/* Botón Eliminar — solo visible para sector "Gerencia" */}
-          {admin?.sector === "Gerencia" && (
+          {tienePermiso(PERMISOS.ELIMINAR_CLIENTES) && (
             <div className="mt-4">
               <Button
                 variant="danger"

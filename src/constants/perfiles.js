@@ -1,0 +1,25 @@
+export const PERFILES = {
+  SOPORTE: "Soporte",
+  GERENCIA: "Gerencia",
+};
+
+export const PERMISOS = {
+  VER_DASHBOARD: "ver_dashboard",
+  VER_CLIENTES: "ver_clientes",
+  CREAR_CLIENTES: "crear_clientes",
+  ELIMINAR_CLIENTES: "eliminar_clientes",
+};
+
+export const PERMISOS_POR_PERFIL = {
+  [PERFILES.SOPORTE]: [
+    PERMISOS.VER_DASHBOARD,
+    PERMISOS.VER_CLIENTES,
+    PERMISOS.CREAR_CLIENTES,
+  ],
+  [PERFILES.GERENCIA]: [
+    PERMISOS.VER_DASHBOARD,
+    PERMISOS.VER_CLIENTES,
+    PERMISOS.CREAR_CLIENTES,
+    PERMISOS.ELIMINAR_CLIENTES,
+  ],
+};
