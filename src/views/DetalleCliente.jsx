@@ -14,13 +14,14 @@ import { AdminContext } from "../context/AdminContext";
 import { PERMISOS } from "../constants/perfiles";
  
 const API_URL = "https://fakestoreapi.com/users";
+const LOCAL_STORAGE_KEY = "clientesAgregados";
  
 function DetalleCliente() {
-  // useParams captura el :id dinámico de la URL (/clientes/3 → id = "3")
+  
   const { id } = useParams();
   const navigate = useNavigate();
  
-  // Leemos el sector del admin logueado para controlar el botón de eliminar
+  
   const { admin, tienePermiso } = useContext(AdminContext);
  
   const [cliente, setCliente] = useState(null);
@@ -29,64 +30,103 @@ function DetalleCliente() {
   const [eliminando, setEliminando] = useState(false);
   const [eliminado, setEliminado] = useState(false);
  
-  // ----- Fetch del cliente por ID -----
-  useEffect(() => {
-    const obtenerCliente = async () => {
-      try {
-        setCargando(true);
-        setError(null);
  
-        const respuesta = await fetch(`${API_URL}/${id}`);
- 
-        if (!respuesta.ok) {
-          throw new Error(`Error del servidor: ${respuesta.status}`);
-        }
- 
-        const datos = await respuesta.json();
-        setCliente(datos);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setCargando(false);
-      }
-    };
- 
-    obtenerCliente();
-  }, [id]); // si el id de la URL cambia, vuelve a fetchear
- 
-  // ----- Eliminar cliente (solo Gerencia) -----
-  const handleEliminar = async () => {
-    const confirmar = window.confirm(
-      `¿Seguro que querés eliminar al cliente #${id} de la base de datos?`
-    );
-    if (!confirmar) return;
- 
+ useEffect(() => {
+  const obtenerCliente = async () => {
     try {
-      setEliminando(true);
- 
-      // FakeStoreAPI acepta DELETE pero no elimina nada realmente —
-      // es una simulación. Lo importante es que la petición se hace
-      // y el servidor responde con el objeto eliminado.
-      const respuesta = await fetch(`${API_URL}/${id}`, {
-        method: "DELETE",
-      });
- 
-      if (!respuesta.ok) {
-        throw new Error(`No se pudo eliminar: ${respuesta.status}`);
+      setCargando(true);
+      setError(null);
+
+     
+      const respuesta = await fetch(`${API_URL}/${id}`);
+
+          if (respuesta.ok) {
+            const datos = await respuesta.json();
+
+  
+         if (datos && Number(datos.id) === Number(id)) {
+         setCliente(datos);
+         return;
+        }
+      }  
+
+      
+      const clientesLocales =
+        JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || [];
+
+      const clienteLocal = clientesLocales.find(
+        (c) => Number(c.id) === Number(id)
+      );
+
+      if (clienteLocal) {
+        setCliente(clienteLocal);
+      } else {
+        throw new Error("Cliente no encontrado.");
       }
- 
-      setEliminado(true);
     } catch (err) {
       setError(err.message);
     } finally {
-      setEliminando(false);
+      setCargando(false);
     }
   };
+
+  obtenerCliente();
+}, [id]);
  
-  // ----- Render -----
+
+  const handleEliminar = async () => {
+  const confirmar = window.confirm(
+    `¿Seguro que querés eliminar al cliente #${id}?`
+  );
+
+  if (!confirmar) return;
+
+  try {
+    setEliminando(true);
+
+    
+    const clientesLocales =
+      JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || [];
+
+    const existeLocal = clientesLocales.some(
+      (c) => Number(c.id) === Number(id)
+    );
+
+    if (existeLocal) {
+      const nuevosClientes = clientesLocales.filter(
+        (c) => Number(c.id) !== Number(id)
+      );
+
+      localStorage.setItem(
+        LOCAL_STORAGE_KEY,
+        JSON.stringify(nuevosClientes)
+      );
+
+      setEliminado(true);
+      return;
+    }
+
+    
+    const respuesta = await fetch(`${API_URL}/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!respuesta.ok) {
+      throw new Error(`No se pudo eliminar: ${respuesta.status}`);
+    }
+
+    setEliminado(true);
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setEliminando(false);
+  }
+};
+ 
+ 
   return (
     <Container className="py-4">
-      {/* Botón volver */}
+      
       <Button
         variant="outline-secondary"
         className="mb-4"
@@ -95,7 +135,7 @@ function DetalleCliente() {
         ← Volver a la lista
       </Button>
  
-      {/* Estado: cargando */}
+
       {cargando && (
         <div className="d-flex align-items-center gap-2">
           <Spinner animation="border" variant="primary" />
@@ -103,7 +143,7 @@ function DetalleCliente() {
         </div>
       )}
  
-      {/* Estado: error */}
+     
       {!cargando && error && (
         <Alert variant="danger">
           <Alert.Heading>Error al cargar la ficha</Alert.Heading>
@@ -118,7 +158,7 @@ function DetalleCliente() {
         </Alert>
       )}
  
-      {/* Estado: cliente eliminado */}
+      
       {eliminado && (
         <Alert variant="success">
           <Alert.Heading>Cliente eliminado correctamente</Alert.Heading>
@@ -132,7 +172,7 @@ function DetalleCliente() {
         </Alert>
       )}
  
-      {/* Estado: éxito — ficha del cliente */}
+     
       {!cargando && !error && cliente && !eliminado && (
         <>
           <h2 className="fw-bold mb-4">
@@ -141,7 +181,7 @@ function DetalleCliente() {
           </h2>
  
           <Row className="g-4">
-            {/* Datos personales */}
+            
             <Col md={6}>
               <Card className="h-100 shadow-sm">
                 <Card.Header className="bg-dark text-white fw-bold">
@@ -162,7 +202,7 @@ function DetalleCliente() {
               </Card>
             </Col>
  
-            {/* Dirección — desestructurando el objeto anidado address */}
+            
             <Col md={6}>
               <Card className="h-100 shadow-sm">
                 <Card.Header className="bg-dark text-white fw-bold">
@@ -185,7 +225,7 @@ function DetalleCliente() {
               </Card>
             </Col>
  
-            {/* Credenciales de acceso */}
+            
             <Col md={6}>
               <Card className="h-100 shadow-sm">
                 <Card.Header className="bg-dark text-white fw-bold">
@@ -202,7 +242,7 @@ function DetalleCliente() {
               </Card>
             </Col>
  
-            {/* Sector del admin logueado — info del contexto */}
+           
             <Col md={6}>
               <Card className="h-100 shadow-sm border-info">
                 <Card.Header className="bg-info text-white fw-bold">
@@ -230,7 +270,7 @@ function DetalleCliente() {
             </Col>
           </Row>
  
-          {/* Botón Eliminar — solo visible para sector "Gerencia" */}
+         
           {tienePermiso(PERMISOS.ELIMINAR_CLIENTES) && (
             <div className="mt-4">
               <Button

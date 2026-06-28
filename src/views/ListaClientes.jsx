@@ -19,6 +19,7 @@ import {
 } from "react-bootstrap";
  
 const API_URL = "https://fakestoreapi.com/users";
+const LOCAL_STORAGE_KEY = "clientesAgregados";
  
 function ListaClientes() {
   const { tienePermiso } = useContext(AdminContext);
@@ -44,24 +45,33 @@ function ListaClientes() {
   });
  
   useEffect(() => {
-    const obtenerClientes = async () => {
-      try {
-        setCargando(true);
-        setError(null);
-        const respuesta = await fetch(API_URL);
-        if (!respuesta.ok) {
-          throw new Error(`Error del servidor: ${respuesta.status}`);
-        }
-        const datos = await respuesta.json();
-        setClientes(datos);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setCargando(false);
+  const obtenerClientes = async () => {
+    try {
+      setCargando(true);
+      setError(null);
+
+      const respuesta = await fetch(API_URL);
+
+      if (!respuesta.ok) {
+        throw new Error(`Error del servidor: ${respuesta.status}`);
       }
-    };
-    obtenerClientes();
-  }, []);
+
+      const datos = await respuesta.json();
+
+      
+      const clientesLocales =
+        JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || [];
+
+      setClientes([...datos, ...clientesLocales]);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  obtenerClientes();
+}, []);
  
   const clientesFiltrados = clientes.filter((cliente) => {
     const termino = busqueda.toLowerCase();
@@ -107,22 +117,47 @@ function ListaClientes() {
       }
  
       const datos = await respuesta.json();
- 
-      // Agregamos el cliente al estado local para que aparezca en la grilla
-      // sin recargar — FakeStoreAPI no guarda datos reales.
-      setClientes((prev) => [
-        ...prev,
-        {
-          id: datos.id,
-          name: {
-            firstname: nuevoCliente.nombre,
-            lastname: nuevoCliente.apellido,
-          },
-          email: nuevoCliente.email,
-          phone: nuevoCliente.telefono,
-          address: { city: nuevoCliente.ciudad },
-        },
-      ]);
+
+const clienteNuevo = {
+  id: Date.now(),
+  email: nuevoCliente.email,
+  username: nuevoCliente.username,
+  password: nuevoCliente.password,
+
+  name: {
+    firstname: nuevoCliente.nombre,
+    lastname: nuevoCliente.apellido,
+  },
+
+  phone: nuevoCliente.telefono,
+
+  address: {
+    city: nuevoCliente.ciudad,
+    street: "",
+    number: 0,
+    zipcode: "",
+    geolocation: {
+      lat: "",
+      long: "",
+    },
+  },
+};
+
+
+const clientesLocales =
+  JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || [];
+
+
+clientesLocales.push(clienteNuevo);
+
+
+localStorage.setItem(
+  LOCAL_STORAGE_KEY,
+  JSON.stringify(clientesLocales)
+);
+
+
+setClientes((prev) => [...prev, clienteNuevo]);
  
       setToastMensaje(`Cliente dado de alta con éxito. ID asignado: ${datos.id}`);
       setToastError(false);
@@ -145,7 +180,7 @@ function ListaClientes() {
   return (
     <Container className="py-4">
  
-      {/* Toast éxito/error */}
+     
       <ToastContainer position="top-end" className="p-3" style={{ zIndex: 9999 }}>
         <Toast
           bg={toastError ? "danger" : "success"}
@@ -161,7 +196,7 @@ function ListaClientes() {
         </Toast>
       </ToastContainer>
  
-      {/* Encabezado */}
+    
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="fw-bold mb-0">Lista de Clientes</h2>
         {tienePermiso(PERMISOS.CREAR_CLIENTES) && (
@@ -171,7 +206,7 @@ function ListaClientes() {
         )}
       </div>
  
-      {/* Buscador */}
+     
       <InputGroup className="mb-4" style={{ maxWidth: 450 }}>
         <Form.Control
           placeholder="Buscar por apellido o ciudad..."
@@ -185,7 +220,7 @@ function ListaClientes() {
         )}
       </InputGroup>
  
-      {/* Estado: cargando */}
+     
       {cargando && (
         <div className="d-flex align-items-center gap-2">
           <Spinner animation="border" variant="primary" />
@@ -193,7 +228,7 @@ function ListaClientes() {
         </div>
       )}
  
-      {/* Estado: error */}
+      
       {!cargando && error && (
         <Alert variant="danger">
           <Alert.Heading>Error al cargar los clientes</Alert.Heading>
@@ -204,7 +239,7 @@ function ListaClientes() {
         </Alert>
       )}
  
-      {/* Estado: éxito — grilla de cards */}
+      
       {!cargando && !error && (
         <>
           <p className="text-muted mb-3 fw-semibold">
@@ -280,7 +315,7 @@ function ListaClientes() {
         </>
       )}
  
-      {/* Modal formulario de alta */}
+      
       <Modal show={mostrarModal} onHide={() => setMostrarModal(false)} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>Nuevo Cliente</Modal.Title>
