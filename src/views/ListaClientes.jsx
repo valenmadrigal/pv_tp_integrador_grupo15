@@ -34,6 +34,7 @@ function ListaClientes() {
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMensaje, setToastMensaje] = useState("");
   const [toastError, setToastError] = useState(false);
+  const [errores, setErrores] = useState({});
   const [nuevoCliente, setNuevoCliente] = useState({
     nombre: "",
     apellido: "",
@@ -83,6 +84,46 @@ function ListaClientes() {
   const handleChange = (e) => {
     setNuevoCliente({ ...nuevoCliente, [e.target.name]: e.target.value });
   };
+  const validarFormulario = () => {
+  const nuevosErrores = {};
+
+  if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ ]{2,}$/.test(nuevoCliente.nombre)) {
+    nuevosErrores.nombre =
+      "Ingrese un nombre válido (solo letras).";
+  }
+
+  if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ ]{2,}$/.test(nuevoCliente.apellido)) {
+    nuevosErrores.apellido =
+      "Ingrese un apellido válido (solo letras).";
+  }
+
+  if (!/\S+@\S+\.\S+/.test(nuevoCliente.email)) {
+    nuevosErrores.email = "Ingrese un email válido.";
+  }
+
+  if (!/^[0-9]{8,15}$/.test(nuevoCliente.telefono)) {
+    nuevosErrores.telefono =
+      "Ingrese un teléfono válido (8 a 15 números).";
+  }
+
+  if (nuevoCliente.ciudad === "") {
+    nuevosErrores.ciudad = "Seleccione una ciudad.";
+  }
+
+  if (nuevoCliente.username.trim().length < 4) {
+    nuevosErrores.username =
+      "El usuario debe tener al menos 4 caracteres.";
+  }
+
+  if (nuevoCliente.password.length < 6) {
+    nuevosErrores.password =
+      "La contraseña debe tener al menos 6 caracteres.";
+  }
+
+  setErrores(nuevosErrores);
+
+  return Object.keys(nuevosErrores).length === 0;
+};
  
 const handleSubmit = async (e) => {
   e.preventDefault();
@@ -92,10 +133,14 @@ const handleSubmit = async (e) => {
   );
 
   if (!confirmar) {
-    return;
-  }
+  return;
+}
 
-  setEnviando(true);
+if (!validarFormulario()) {
+  return;
+}
+
+setEnviando(true);
 
   const payload = {
     email: nuevoCliente.email,
@@ -335,12 +380,16 @@ setClientes((prev) => [...prev, clienteNuevo]);
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Nombre</Form.Label>
-                  <Form.Control
-                    name="nombre"
-                    value={nuevoCliente.nombre}
-                    onChange={handleChange}
-                    required
+                 <Form.Control
+                  name="nombre"
+                 value={nuevoCliente.nombre}
+                 onChange={handleChange}
+                 isInvalid={!!errores.nombre}
                   />
+
+                <Form.Control.Feedback type="invalid">
+                 {errores.nombre}
+                </Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={6}>
@@ -350,8 +399,12 @@ setClientes((prev) => [...prev, clienteNuevo]);
                     name="apellido"
                     value={nuevoCliente.apellido}
                     onChange={handleChange}
-                    required
+                    isInvalid={!!errores.apellido}
                   />
+
+                  <Form.Control.Feedback type="invalid">
+                    {errores.apellido}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Col>
             </Row>
@@ -360,23 +413,31 @@ setClientes((prev) => [...prev, clienteNuevo]);
                 <Form.Group className="mb-3">
                   <Form.Label>Email</Form.Label>
                   <Form.Control
-                    type="email"
-                    name="email"
-                    value={nuevoCliente.email}
-                    onChange={handleChange}
-                    required
+                   type="email"
+                   name="email"
+                   value={nuevoCliente.email}
+                   onChange={handleChange}
+                   isInvalid={!!errores.email}
                   />
+
+                 <Form.Control.Feedback type="invalid">
+                  {errores.email}
+                 </Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Teléfono</Form.Label>
-                  <Form.Control
-                    name="telefono"
-                    value={nuevoCliente.telefono}
-                    onChange={handleChange}
-                    required
-                  />
+                 <Form.Control
+                   name="telefono"
+                   value={nuevoCliente.telefono}
+                   onChange={handleChange}
+                   isInvalid={!!errores.telefono}
+                 />
+
+                <Form.Control.Feedback type="invalid">
+                {errores.telefono}
+                </Form.Control.Feedback>
                 </Form.Group>
               </Col>
             </Row>
@@ -388,6 +449,7 @@ setClientes((prev) => [...prev, clienteNuevo]);
                     name="ciudad"
                     value={nuevoCliente.ciudad}
                     onChange={handleChange}
+                    isInvalid={!!errores.ciudad}
                     required
                   >
                     <option value="">Seleccionar ciudad...</option>
@@ -397,29 +459,40 @@ setClientes((prev) => [...prev, clienteNuevo]);
                       </option>
                     ))}
                   </Form.Select>
+                  <Form.Control.Feedback type="invalid">
+                   {errores.ciudad}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Username</Form.Label>
                   <Form.Control
-                    name="username"
-                    value={nuevoCliente.username}
-                    onChange={handleChange}
-                    required
-                  />
+                   name="username"
+                   value={nuevoCliente.username}
+                   onChange={handleChange}
+                   isInvalid={!!errores.username}
+                 />
+
+                <Form.Control.Feedback type="invalid">
+                  {errores.username}
+                </Form.Control.Feedback>
                 </Form.Group>
               </Col>
             </Row>
             <Form.Group className="mb-3">
               <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                name="password"
-                value={nuevoCliente.password}
-                onChange={handleChange}
-                required
-              />
+             <Form.Control
+              type="password"
+             name="password"
+             value={nuevoCliente.password}
+             onChange={handleChange}
+             isInvalid={!!errores.password}
+             />
+
+           <Form.Control.Feedback type="invalid">
+            {errores.password}
+           </Form.Control.Feedback>
             </Form.Group>
  
             <div className="d-flex justify-content-end gap-2">
