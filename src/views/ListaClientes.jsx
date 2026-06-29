@@ -84,26 +84,35 @@ function ListaClientes() {
     setNuevoCliente({ ...nuevoCliente, [e.target.name]: e.target.value });
   };
  
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setEnviando(true);
- 
-    const payload = {
-      email: nuevoCliente.email,
-      username: nuevoCliente.username,
-      password: nuevoCliente.password,
-      name: {
-        firstname: nuevoCliente.nombre,
-        lastname: nuevoCliente.apellido,
-      },
-      address: {
-        city: nuevoCliente.ciudad,
-        street: "",
-        number: 0,
-        zipcode: "",
-      },
-      phone: nuevoCliente.telefono,
-    };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const confirmar = window.confirm(
+    "¿Está seguro de que desea registrar este cliente?"
+  );
+
+  if (!confirmar) {
+    return;
+  }
+
+  setEnviando(true);
+
+  const payload = {
+    email: nuevoCliente.email,
+    username: nuevoCliente.username,
+    password: nuevoCliente.password,
+    name: {
+      firstname: nuevoCliente.nombre,
+      lastname: nuevoCliente.apellido,
+    },
+    address: {
+      city: nuevoCliente.ciudad,
+      street: "",
+      number: 0,
+      zipcode: "",
+    },
+    phone: nuevoCliente.telefono,
+  };
  
     try {
       const respuesta = await fetch(API_URL, {
