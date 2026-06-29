@@ -310,28 +310,25 @@ setClientes((prev) => [...prev, clienteNuevo]);
               {clientesFiltrados.map((cliente) => (
                 <Col key={cliente.id}>
                   <Card className="h-100 shadow-sm">
-                    {/* Cabecera de la card con avatar inicial */}
+                 
                     <Card.Header className="bg-primary text-white d-flex align-items-center gap-2">
-                      <div
-                        style={{
-                          width: 38,
-                          height: 38,
-                          borderRadius: "50%",
-                          background: "rgba(255,255,255,0.25)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontWeight: "bold",
-                          fontSize: 18,
-                          flexShrink: 0,
-                        }}
-                      >
-                        {cliente.name.firstname.charAt(0).toUpperCase()}
-                      </div>
-                      <span className="fw-bold">
-                        {cliente.name.firstname} {cliente.name.lastname}
-                      </span>
-                    </Card.Header>
+                     <img
+                     src={`https://ui-avatars.com/api/?name=${cliente.name.firstname}+${cliente.name.lastname}&background=0D6EFD&color=fff&size=128`}
+                     alt={`${cliente.name.firstname} ${cliente.name.lastname}`}
+                     style={{
+                      width: 45,
+                     height: 45,
+                     borderRadius: "50%",
+                     objectFit: "cover",
+                     border: "2px solid white",
+                     flexShrink: 0,
+                    }}
+                   />
+
+                  <span className="fw-bold">
+                    {cliente.name.firstname} {cliente.name.lastname}
+                 </span>
+              </Card.Header>
  
                     <Card.Body>
                       <p className="mb-1">
