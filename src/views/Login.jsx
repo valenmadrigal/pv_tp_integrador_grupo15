@@ -35,7 +35,7 @@ return (
   <div className="login">
 
     <h1>
-      Login Administrador
+      Sistema de Gestión de Clientes
     </h1>
 
     <form onSubmit={handleSubmit}>
